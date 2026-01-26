@@ -81,6 +81,10 @@
             transform: translateY(-5px);
         }
 
+        .card-compact {
+            padding: 0.5rem;
+        }
+
         .btn {
             display: inline-flex;
             align-items: center;
@@ -204,15 +208,15 @@
         </header>
 
         <main class="space-y-6 no-print">
-            <!-- 1. Cargar Hojas -->
-            <div class="card">
-                <div id="dataLoaderToggler" class="flex justify-between items-center cursor-pointer">
-                    <h2 class="text-2xl font-semibold">1. Cargar Hojas de Datos</h2>
-                    <svg id="dataLoaderChevron" class="h-6 w-6 transition-transform transform rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <!-- 1. Cargar Hojas (Minimizado) -->
+            <div class="card card-compact">
+                <div id="dataLoaderToggler" class="flex justify-between items-center cursor-pointer px-2 py-1 hover:bg-slate-700/30 rounded transition-colors">
+                    <h2 class="text-sm font-semibold">📊 Cargar Datos</h2>
+                    <svg id="dataLoaderChevron" class="h-5 w-5 transition-transform transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
                 </div>
-                <div id="dataLoaderContent" class="mt-4 border-t border-slate-700 pt-4">
+                <div id="dataLoaderContent" class="hidden mt-2 border-t border-slate-700 pt-4">
                     <div class="space-y-4">
                         <!-- DB1 -->
                         <div class="flex items-center gap-4 p-2 rounded-lg hover:bg-slate-800/50">
@@ -248,6 +252,48 @@
                             </label>
                             <input type="file" id="file2" accept=".xlsx,.xls" class="hidden">
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. OCR -->
+            <div class="card">
+                <div id="ocrToggler" class="flex justify-between items-center cursor-pointer">
+                    <h2 class="text-2xl font-semibold">2. Convertir Imagen a Texto (OCR)</h2>
+                    <svg id="ocrChevron" class="h-6 w-6 transition-transform transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+                <div id="ocrContent" class="hidden mt-4 border-t border-slate-700 pt-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                        <!-- Códigos OCR -->
+                        <div id="paste-area-codes" class="space-y-2">
+                            <h3 class="font-medium">A. Extraer Códigos</h3>
+                            <label for="ocrInputCodes" class="btn btn-tertiary w-full text-sm py-2 cursor-pointer">
+                                <span>Seleccionar Archivo de Códigos</span>
+                            </label>
+                            <p class="text-xs text-center">O pegue la imagen en esta sección</p>
+                            <input type="file" id="ocrInputCodes" accept="image/*" class="hidden">
+                            <p id="ocrStatusCodes" class="text-sm text-center">...</p>
+                            <textarea id="ocrOutput" rows="4" class="w-full p-2" placeholder="Códigos extrados..."></textarea>
+                            <button id="clearOcrOutputBtn" class="btn btn-danger w-full text-sm py-2"><span>Limpiar Códigos</span></button>
+                        </div>
+
+                        <!-- Cantidades OCR -->
+                        <div id="paste-area-quantities" class="space-y-2">
+                            <h3 class="font-medium">B. Extraer Cantidades</h3>
+                            <label for="ocrInputQuantities" class="btn btn-tertiary w-full text-sm py-2 cursor-pointer">
+                                <span>Seleccionar Archivo de Cantidades</span>
+                            </label>
+                            <p class="text-xs text-center">O pegue la imagen en esta sección</p>
+                            <input type="file" id="ocrInputQuantities" accept="image/*" class="hidden">
+                            <p id="ocrStatusQuantities" class="text-sm text-center">...</p>
+                            <textarea id="quantityInput" rows="4" class="w-full p-2" placeholder="Cantidades extradas..."></textarea>
+                            <button id="clearQuantityInputBtn" class="btn btn-danger w-full text-sm py-2"><span>Limpiar Cantidades</span></button>
+                        </div>
+                    </div>
+                    <div class="mt-4 border-t border-slate-700 pt-4">
+                        <button id="generateReportBtn" class="btn btn-primary w-full"><span>Generar Reporte con Datos Convertidos</span></button>
                     </div>
                 </div>
             </div>
@@ -290,8 +336,10 @@
         </div>
     </div>
 
-    <footer class="text-center p-4 mt-8 no-print">
-        <p class="text-sm">CREADO POR EYNER GARCIA</p>
+    <footer class="text-center p-6 mt-8 no-print bg-slate-200/30 rounded-lg border border-slate-300/50 backdrop-filter backdrop-blur-sm">
+        <p class="text-xs text-slate-600">Created by</p>
+        <p class="text-sm font-semibold text-slate-700">Eyner Garcia</p>
+        <p class="text-xs text-slate-600">© 2026</p>
     </footer>
 
     <!-- Modal QR -->
@@ -329,9 +377,23 @@
         const dataLoaderToggler = document.getElementById("dataLoaderToggler");
         const dataLoaderContent = document.getElementById("dataLoaderContent");
         const dataLoaderChevron = document.getElementById("dataLoaderChevron");
+        const ocrToggler = document.getElementById("ocrToggler");
+        const ocrContent = document.getElementById("ocrContent");
+        const ocrChevron = document.getElementById("ocrChevron");
         const bulkSearchToggler = document.getElementById("bulkSearchToggler");
         const bulkSearchContent = document.getElementById("bulkSearchContent");
         const bulkSearchChevron = document.getElementById("bulkSearchChevron");
+        const ocrInputCodes = document.getElementById("ocrInputCodes");
+        const ocrInputQuantities = document.getElementById("ocrInputQuantities");
+        const ocrStatusCodes = document.getElementById("ocrStatusCodes");
+        const ocrStatusQuantities = document.getElementById("ocrStatusQuantities");
+        const ocrOutput = document.getElementById("ocrOutput");
+        const quantityInput = document.getElementById("quantityInput");
+        const clearOcrOutputBtn = document.getElementById("clearOcrOutputBtn");
+        const clearQuantityInputBtn = document.getElementById("clearQuantityInputBtn");
+        const generateReportBtn = document.getElementById("generateReportBtn");
+        const pasteAreaCodes = document.getElementById("paste-area-codes");
+        const pasteAreaQuantities = document.getElementById("paste-area-quantities");
         const clearBulkSearchBtn = document.getElementById("clearBulkSearchBtn");
         const clearReportBtn = document.getElementById("clearReportBtn");
         const themeToggleBtn = document.getElementById("themeToggleBtn");
@@ -450,9 +512,102 @@
             dataLoaderChevron.classList.toggle("rotate-180");
         });
 
+        ocrToggler.addEventListener("click", () => {
+            ocrContent.classList.toggle("hidden");
+            ocrChevron.classList.toggle("rotate-180");
+        });
+
         bulkSearchToggler.addEventListener("click", () => {
             bulkSearchContent.classList.toggle("hidden");
             bulkSearchChevron.classList.toggle("rotate-180");
+        });
+
+        // OCR Functions
+        async function processImageForOCR(file, outputTextarea, statusElement, inputElement = null) {
+            if (!file) {
+                statusElement.textContent = "No se proporcionó una imagen válida.";
+                statusElement.classList.add("text-red-500");
+                return;
+            }
+
+            statusElement.textContent = "Procesando imagen...";
+            statusElement.classList.remove("text-red-500", "text-gray-500", "text-green-400");
+            statusElement.classList.add("text-sky-400");
+
+            try {
+                const data = await Tesseract.recognize(file, "eng+spa", {
+                    logger: m => {
+                        if (m.status === "recognizing") {
+                            statusElement.textContent = `Reconociendo... ${Math.round(m.progress * 100)}%`;
+                        }
+                    }
+                });
+
+                const text = data.data.text;
+                const existing = outputTextarea.value.trim();
+                const newText = text.trim();
+
+                outputTextarea.value = existing ? existing + "\n" + newText : newText;
+                outputTextarea.scrollTop = outputTextarea.scrollHeight;
+                outputTextarea.focus();
+                outputTextarea.selectionStart = outputTextarea.value.length;
+                outputTextarea.selectionEnd = outputTextarea.value.length;
+
+                statusElement.textContent = "¡Éxito! Datos agregados.";
+                statusElement.classList.remove("text-sky-400");
+                statusElement.classList.add("text-green-400");
+            } catch(err) {
+                console.error(err);
+                statusElement.textContent = "Ocurrió un error en la conversión.";
+                statusElement.classList.remove("text-sky-400");
+                statusElement.classList.add("text-red-500");
+            } finally {
+                if (inputElement) inputElement.value = "";
+            }
+        }
+
+        ocrInputCodes.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (file) processImageForOCR(file, ocrOutput, ocrStatusCodes, e.target);
+        });
+
+        ocrInputQuantities.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (file) processImageForOCR(file, quantityInput, ocrStatusQuantities, e.target);
+        });
+
+        function handlePaste(event, outputTextarea, statusElement) {
+            const items = event.clipboardData || event.originalEvent.clipboardData;
+            let img = null;
+
+            for (let i = 0; i < items.items.length; i++) {
+                if (items.items[i].type.indexOf("image") !== -1) {
+                    img = items.items[i].getAsFile();
+                    break;
+                }
+            }
+
+            if (img) {
+                event.preventDefault();
+                statusElement.textContent = "Imagen pegada. Procesando...";
+                processImageForOCR(img, outputTextarea, statusElement);
+            }
+        }
+
+        pasteAreaCodes.addEventListener("paste", (e) => handlePaste(e, ocrOutput, ocrStatusCodes));
+        pasteAreaQuantities.addEventListener("paste", (e) => handlePaste(e, quantityInput, ocrStatusQuantities));
+
+        clearOcrOutputBtn.addEventListener("click", () => { ocrOutput.value = ""; });
+        clearQuantityInputBtn.addEventListener("click", () => { quantityInput.value = ""; });
+
+        generateReportBtn.addEventListener("click", () => {
+            const codes = ocrOutput.value;
+            if (!codes.trim()) {
+                alert("No hay códigos extrados para generar el reporte.");
+                return;
+            }
+            bulkSearchInput.value = codes;
+            generateReport(codes);
         });
 
         function updateLocation(code, newLocation) {
