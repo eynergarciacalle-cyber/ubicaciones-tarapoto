@@ -156,15 +156,14 @@
         .print-only { display: none; }
 
         @media print {
-            body { background: #fff !important; }
-            body { visibility: hidden; }
-            .printableArea, .printableArea * { visibility: visible; }
-            .printableArea { color: #000 !important; position: absolute; left: 0; top: 0; width: 100%; }
+            body { background: #fff !important; color: #000 !important; }
+            .printableArea { color: #000 !important; }
             .no-print { display: none !important; }
             .print-only { display: block !important; background: #fff !important; color: #000 !important; }
             .results-scroll-wrapper { max-height: none !important; overflow-y: visible !important; }
             .printableArea table, .printableArea th, .printableArea td { border-color: #999 !important; font-size: 9pt !important; padding: 2px 4px !important; }
-            .printableArea th { background: #eee !important; }
+            .printableArea th { background: #eee !important; color: #000 !important; }
+            .printableArea td { color: #000 !important; }
         }
 
         .qr-modal {
