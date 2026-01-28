@@ -892,14 +892,12 @@
             // Si el target es "bulk", agregar a la sección 3
             if (qrTarget === "bulk") {
                 bulkSearchInput.value += (bulkSearchInput.value.trim() ? "\n" : "") + value;
-                bulkSearchInput.focus();
                 generateReport(bulkSearchInput.value);
             } else {
                 // Si el target es un ID de fila, colocar en el campo de ubicación correspondiente
                 const targetInput = document.querySelector(`input[data-qr-target="${qrTarget}"]`);
                 if (targetInput) {
                     targetInput.value = value;
-                    targetInput.focus();
                     
                     // Disparar el evento blur para que se guarde automáticamente
                     const blurEvent = new Event('blur');
