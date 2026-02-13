@@ -631,6 +631,7 @@
 
         function generateReport(codesString) {
             const codes = codesString.trim().split("\n").filter(c => c.trim());
+            const quantities = quantityInput.value.trim().split("\n").filter(q => q.trim());
 
             if (!codes.length) {
                 printTitle.textContent = "";
@@ -646,6 +647,7 @@
                         <th class="border border-slate-600 p-2 font-semibold">Código</th>
                         <th class="border border-slate-600 p-2 font-semibold">Descripción</th>
                         <th class="border border-slate-600 p-2 font-semibold">Unidad</th>
+                        <th class="border border-slate-600 p-2 font-semibold text-center">Cantidad</th>
                         <th class="border border-slate-600 p-2 font-semibold">Ubicación</th>
                     </tr>
                 </thead>
@@ -659,12 +661,14 @@
                 const item1 = data1.find(i => String(i.codigo).trim().toLowerCase() === norm);
                 const item2 = data2.find(i => String(i.codigo).trim().toLowerCase() === norm);
                 const uniqueId = `row-${norm}-${idx}`;
+                const quantity = quantities[idx] ? quantities[idx].trim() : "";
 
                 if (!item1 && !item2) {
                     const codeCell = `<div class="no-print"><input type="text" value="${clean}" class="code-input w-full p-1 border border-transparent focus:border-slate-600 rounded-md bg-transparent"></div><span class="print-only">${clean}</span>`;
                     html += `<tr class="bg-red-900/20">
                         <td class="border border-slate-700 p-2">${codeCell}</td>
-                        <td class="border border-slate-700 p-2" colspan="3"><span class="text-red-400 font-medium">Código no encontrado en ninguna base.</span></td>
+                        <td class="border border-slate-700 p-2" colspan="2"><span class="text-red-400 font-medium">Código no encontrado en ninguna base.</span></td>
+                        <td class="border border-slate-700 p-2 text-center">${quantity}</td>
                         <td class="border border-slate-700 p-2"><span class="text-red-400">NA</span></td>
                     </tr>`;
                     return;
@@ -687,6 +691,7 @@
                     <td class="border border-slate-700 p-2">${codeCell}</td>
                     <td class="border border-slate-700 p-2">${desc}</td>
                     <td class="border border-slate-700 p-2">${undm}</td>
+                    <td class="border border-slate-700 p-2 text-center">${quantity}</td>
                     <td class="border border-slate-700 p-2">${locCell}</td>
                 </tr>`;
             });
